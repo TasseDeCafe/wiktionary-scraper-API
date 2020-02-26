@@ -1,4 +1,5 @@
-from language_functions import conjugate, decline_noun, decline_adjective
+import polish
+import russian
 from flask import Flask, request
 from flask_jwt import JWT, jwt_required, current_identity
 from werkzeug.security import safe_str_cmp
@@ -21,6 +22,8 @@ app.config['SECRET_KEY'] = '0075e7f61334ae26a0e0fd2be0e1f4dd4241a6291bffbec1d9c4
 
 jwt = JWT(app, authenticate, identity)
 
+# ******************* Polish functions *******************
+
 
 @app.route('/conjugate_polish', methods=['POST'])
 @jwt_required()
@@ -31,7 +34,7 @@ def conjugate_polish():
     person = request.form['person']
     aspect = request.form['aspect']
     try:
-        conjugation_cell = conjugate(language, verb, tense, person, aspect)
+        conjugation_cell = polish.conjugate(language, verb, tense, person, aspect)
         return conjugation_cell
     except Exception:
         return 'Bad request or no data.'
@@ -45,7 +48,7 @@ def decline_polish_noun():
     noun_case = request.form['noun_case']
     number = request.form['number']
     try:
-        declined_noun = decline_noun(language, noun, noun_case, number)
+        declined_noun = polish.decline_noun(language, noun, noun_case, number)
         return declined_noun
     except Exception:
         return 'Bad request or no data.'
@@ -58,11 +61,27 @@ def decline_polish_adjective():
     adjective_case = request.form['adjective_case']
     gender_and_number = request.form['gender_and_number']
     try:
-        declined_adjective = decline_adjective(language, adjective, adjective_case, gender_and_number)
+        declined_adjective = polish.decline_adjective(language, adjective, adjective_case, gender_and_number)
         return declined_adjective
     except Exception:
         return 'Bad request or no data.'
 
+
+# ******************* Russian functions *******************
+
+@app.route('/conjugate_russian', methods=['POST'])
+@jwt_required()
+def conjugate_russian():
+    language = 'Russian'
+    verb = request.form['verb']
+    tense = request.form['tense']
+    person = request.form['person']
+    aspect = request.form['aspect']
+    try:
+        conjugation_cell = russian.conjugate(language, verb, tense, person, aspect)
+        return conjugation_cell
+    except Exception:
+        return 'Bad request or no data.'
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True)

@@ -3,11 +3,10 @@ import urllib.parse
 import requests
 from bs4 import BeautifulSoup
 
-# todo: use the get table function to get the conjugation table
 # todo: create files for each language to separate the functions properly
 
 def get_table(url, language):
-    language_code = {'Polish': 'pl'}
+    language_code = {'Polish': 'pl', 'Russian': 'ru'}
     r = requests.get(url)
     soup = BeautifulSoup(r.content, 'html5lib')
     navhead_elements = soup.find_all('div', attrs={'class': 'NavHead'})
@@ -15,8 +14,12 @@ def get_table(url, language):
     for el in navhead_elements:
         if el.find(attrs={'lang': language_code[language]}):
             table_element = el.find_next_sibling().find('table')
+            # There might be more than one conjugation table. The first one is the most common meaning.
+            break
     tables = pd.read_html(str(table_element))
-    return tables[0]
+    table_scraped = tables[0]
+    return table_scraped
+
 
 def set_url(language, verb, aspect):
     verb = urllib.parse.quote(verb, safe='')
@@ -53,6 +56,27 @@ def set_url(language, verb, aspect):
 
     return url, verb_of_other_aspect, aspect_verb
 
+def locate_cell(conjugation_table, tense, person):
+    # todo: refactor this, it is unreadable
+    # find location of all cells that contain tense in the conjugation table
+    location_list_tense = [
+        (conjugation_table[col][conjugation_table[col].eq(tense)].index[i], conjugation_table.columns.get_loc(col)) for
+        col in conjugation_table.columns for i in
+        range(len(conjugation_table[col][conjugation_table[col].eq(tense)].index))]
+    # find location of all cells that contain person in the conjugation table
+    location_list_person = [
+        (conjugation_table[col][conjugation_table[col].eq(person)].index[i], conjugation_table.columns.get_loc(col)) for
+        col in conjugation_table.columns for i
+        in range(len(conjugation_table[col][conjugation_table[col].eq(person)].index))]
+    location_rows_person = [location[0] for location in location_list_person]
+    location_conjugation = None
+    for location in location_list_tense:
+        # gives the location of a cell in a row where there is both the tense and the person
+        if location[0] in location_rows_person:
+            location_conjugation = location
+            break
+    return location_conjugation
+
 
 def conjugate(language, verb, tense, person='', aspect="imperfective"):
     plural = False
@@ -68,27 +92,12 @@ def conjugate(language, verb, tense, person='', aspect="imperfective"):
     # the verb of the other aspect if it exists.
     if verb_of_other_aspect and aspect_verb != aspect and tense == 'infinitive':
         return verb_of_other_aspect
-    # if the page is empty, the error is caught in the try/except block in conjugator.py
-    tables = pd.read_html(url)
     # locate the cell with the requested conjugation
-    conjugation_cell = None
-    for df in tables:
-        # this condition eliminates the audio table which is sometimes there
-        if df.size > 3:
-            # find location of all cells that contain tense in the conjugation table
-            location_list_tense = [(df[col][df[col].eq(tense)].index[i], df.columns.get_loc(col)) for col in df.columns for i in range(len(df[col][df[col].eq(tense)].index))]
-            # find location of all cells that contain person in the conjugation table
-            location_list_person = [(df[col][df[col].eq(person)].index[i], df.columns.get_loc(col)) for col in df.columns for i in range(len(df[col][df[col].eq(person)].index))]
-            location_rows_person = [location[0] for location in location_list_person]
-            location_conjugation = None
-            for location in location_list_tense:
-                # gives the location of a cell in a row where there is both the tense and the person
-                if location[0] in location_rows_person:
-                    location_conjugation = location
-                    break
-            conjugation_cell = df.iloc[location_conjugation[0]][location_conjugation[1] + 2]
-            if plural:
-                conjugation_cell = df.iloc[location_conjugation[0]][location_conjugation[1] + 5]
+    conjugation_table = get_table(url, language)
+    location_conjugation = locate_cell(conjugation_table, tense, person)
+    conjugation_cell = conjugation_table.iloc[location_conjugation[0]][location_conjugation[1] + 2]
+    if plural:
+        conjugation_cell = conjugation_table.iloc[location_conjugation[0]][location_conjugation[1] + 5]
     if not conjugation_cell:
         return 'No data.'
     return conjugation_cell
@@ -106,6 +115,7 @@ def decline_noun(language, noun, case, number):
     elif number == 'plural':
         declension = declension_row.iloc[0][2]
     return declension
+
 
 def decline_adjective(language, adjective, case, gender_and_number):
     location_dict = {'m pers singular': (0, 1),
@@ -126,9 +136,10 @@ def decline_adjective(language, adjective, case, gender_and_number):
 
 
 if __name__ == "__main__":
-
+    pass
+    # Polish tests
     # print(conjugate("Polish", "spać", "infinitive", "infinitive", "perfective"))
     # print(conjugate("Polish", "robić", "passive adjectival participle", aspect="perfective"))
     # print(decline_noun('Polish', 'brat', 'instrumental', 'plural'))
     # print(decline_adjective('Polish', 'niebieski', 'instrumental', 'm pers plural'))
-    print(get_table('https://en.wiktionary.org/wiki/t%C5%82umaczy%C4%87', 'Polish'))
+    # print(get_table('https://en.wiktionary.org/wiki/t%C5%82umaczy%C4%87', 'Polish'))
