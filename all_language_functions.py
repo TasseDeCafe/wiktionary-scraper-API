@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 # todo: create files for each language to separate the functions properly
 
 def get_table(url, language):
-    language_code = {'Polish': 'pl', 'Russian': 'ru'}
+    language_code = {'Polish': 'pl', 'Russian': 'ru', 'Czech': 'cs'}
     r = requests.get(url)
     soup = BeautifulSoup(r.content, 'html5lib')
     navhead_elements = soup.find_all('div', attrs={'class': 'NavHead'})
@@ -16,6 +16,7 @@ def get_table(url, language):
             table_element = el.find_next_sibling().find('table')
             # There might be more than one conjugation table. The first one is the most common meaning.
             break
+
     tables = pd.read_html(str(table_element))
     table_scraped = tables[0]
     return table_scraped

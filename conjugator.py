@@ -1,5 +1,7 @@
 import polish
 import russian
+import czech
+import armenian
 from flask import Flask, request
 from flask_jwt import JWT, jwt_required, current_identity
 from werkzeug.security import safe_str_cmp
@@ -79,6 +81,91 @@ def conjugate_russian():
     aspect = request.form['aspect']
     try:
         conjugation_cell = russian.conjugate(language, verb, tense, person, aspect)
+        return conjugation_cell
+    except Exception:
+        return 'Bad request or no data.'
+
+@app.route('/decline_russian_noun', methods=['POST'])
+@jwt_required()
+def decline_russian_noun():
+    language = 'Russian'
+    noun = request.form['noun']
+    # "case" is a reserved word in JS
+    noun_case = request.form['noun_case']
+    number = request.form['number']
+    try:
+        declined_noun = russian.decline_noun(language, noun, noun_case, number)
+        return declined_noun
+    except Exception:
+        return 'Bad request or no data.'
+
+@app.route('/decline_russian_adjective', methods=['POST'])
+@jwt_required()
+def decline_russian_adjective():
+    language = 'Russian'
+    adjective = request.form['adjective']
+    adjective_case = request.form['adjective_case']
+    gender_and_number = request.form['gender_and_number']
+    try:
+        declined_adjective = russian.decline_adjective(language, adjective, adjective_case, gender_and_number)
+        return declined_adjective
+    except Exception:
+        return 'Bad request or no data.'
+
+# ******************* Czech functions *******************
+
+@app.route('/conjugate_czech', methods=['POST'])
+@jwt_required()
+def conjugate_czech():
+    language = 'Czech'
+    verb = request.form['verb']
+    tense = request.form['tense']
+    person = request.form['person']
+    aspect = request.form['aspect']
+    try:
+        conjugation_cell = czech.conjugate(language, verb, tense, person, aspect)
+        return conjugation_cell
+    except Exception:
+        return 'Bad request or no data.'
+
+@app.route('/decline_czech_noun', methods=['POST'])
+@jwt_required()
+def decline_czech_noun():
+    language = 'Czech'
+    noun = request.form['noun']
+    # "case" is a reserved word in JS
+    noun_case = request.form['noun_case']
+    number = request.form['number']
+    try:
+        declined_noun = czech.decline_noun(language, noun, noun_case, number)
+        return declined_noun
+    except Exception:
+        return 'Bad request or no data.'
+
+@app.route('/decline_czech_adjective', methods=['POST'])
+@jwt_required()
+def decline_czech_adjective():
+    language = 'Czech'
+    adjective = request.form['adjective']
+    adjective_case = request.form['adjective_case']
+    gender_and_number = request.form['gender_and_number']
+    try:
+        declined_adjective = czech.decline_adjective(language, adjective, adjective_case, gender_and_number)
+        return declined_adjective
+    except Exception:
+        return 'Bad request or no data.'
+
+# ******************* Armenian functions *******************
+
+@app.route('/conjugate_armenian', methods=['POST'])
+@jwt_required()
+def conjugate_armenian():
+    language = 'Armenian'
+    verb = request.form['verb']
+    tense = request.form['tense']
+    person = request.form['person']
+    try:
+        conjugation_cell = armenian.conjugate(language, verb, tense, person)
         return conjugation_cell
     except Exception:
         return 'Bad request or no data.'

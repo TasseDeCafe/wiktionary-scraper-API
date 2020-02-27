@@ -7,7 +7,7 @@ from all_language_functions import get_table
 
 
 def remove_romanization(cell_with_romanization):
-    cell_no_romanization = re.search("[а-яА-Яіу́ ]+", cell_with_romanization)[0]
+    cell_no_romanization = re.search("[а-яА-Яіу́ё ]+", cell_with_romanization)[0]
     return cell_no_romanization
 
 
@@ -100,6 +100,7 @@ def decline_noun(language, noun, case, number):
     noun = urllib.parse.quote(noun, safe='')
     url = f'https://wiktionary.org/wiki/{noun}#{language}'
     table = get_table(url, language)
+    table.to_csv('брат.csv')
     # find the row that contains the string of the case
     declension_row = table[table['Unnamed: 0'].str.contains(case, na=False)]
     declension = None
@@ -107,44 +108,71 @@ def decline_noun(language, noun, case, number):
         declension = declension_row.iloc[0][1]
     elif number == 'plural':
         declension = declension_row.iloc[0][2]
-    return declension
+    return remove_romanization(declension)
 
 
 def decline_adjective(language, adjective, case, gender_and_number):
-    location_dict = {'m pers singular': (0, 1),
-                     'm anim singular': (0, 1),
-                     'm inan singular': (0, 2),
-                     'n singular': (0, 3),
-                     'f singular': (0, 4),
-                     'm pers plural': (0, 5),
-                     'other plural': (0, 6)}
+    location_dict = {'nominative masculine': (0, 2),
+                     'nominative neuter': (0, 3),
+                     'nominative feminine': (0, 4),
+                     'nominative plural': (0, 5),
+                     'genitive masculine': (1, 2),
+                     'genitive neuter': (1, 3),
+                     'genitive feminine': (1, 4),
+                     'genitive plural': (1, 5),
+                     'dative masculine': (2, 2),
+                     'dative neuter': (2, 3),
+                     'dative feminine': (2, 4),
+                     'dative plural': (2, 5),
+                     'accusative masculine animate': (3, 2),
+                     'accusative neuter': (3, 3),
+                     'accusative feminine': (3, 4),
+                     'accusative plural animate': (3, 5),
+                     'accusative masculine inanimate': (4, 2),
+                     'accusative plural inanimate': (4, 5),
+                     'instrumental masculine': (5, 2),
+                     'instrumental neuter': (5, 3),
+                     'instrumental feminine': (5, 4),
+                     'instrumental plural': (5, 5),
+                     'prepositional masculine': (6, 2),
+                     'prepositional neuter': (6, 3),
+                     'prepositional feminine': (6, 4),
+                     'prepositional plural': (6, 5),
+                     'short form masculine': (6, 2),
+                     'short form neuter': (6, 3),
+                     'short form feminine': (6, 4),
+                     'short form plural': (6, 5)
+                     }
     adjective = urllib.parse.quote(adjective, safe='')
     url = f'https://wiktionary.org/wiki/{adjective}#{language}'
     table = get_table(url, language)
-    # I have no idea what this line does, but it removes an error when using str.contains
-    table.columns = table.columns.get_level_values(0)
-    declension_row = table[table['case'].str.contains(case, na=False)]
-    declension = declension_row.iloc[location_dict[gender_and_number][0]][location_dict[gender_and_number][1]]
+    search_key = f'{case} {gender_and_number}'.strip()
+    declension = table.iloc[location_dict[search_key][0]][location_dict[search_key][1]]
+    declension = remove_romanization(declension).strip()
     return declension
 
 
 if __name__ == "__main__":
 
-    # Russian tests
-    # print(eliminate_romanization('https://en.wiktionary.org/wiki/%D0%BF%D1%83%D1%82%D0%B5%D1%88%D0%B5%D1%81%D1%82%D0%B2%D0%BE%D0%B2%D0%B0%D1%82%D1%8C', 'Russian'))
-    # print(set_url('Russian', 'путешествовать', 'perfective'))
-    # print(conjugate_russian('Russian', 'путешествовать', 'infinitive', '', 'imperfective'))
-    # print(conjugate_russian('Russian', 'путешествовать', 'present tense', '1st', 'imperfective'))
-    # print(conjugate_russian('Russian', 'путешествовать', 'present tense', '1st pl', 'imperfective'))
-    # print(conjugate_russian('Russian', 'путешествовать', 'future tense', '2nd pl', 'imperfective'))
-    # print(conjugate_russian('Russian', 'путешествовать', 'imperative', 'pl', 'imperfective'))
-    # print(conjugate_russian('Russian', 'путешествовать', 'past tense', 'neuter', 'imperfective'))
-
-    # print(set_url('Russian', 'уходить', 'perfective'))
+    # verb tests
+    print(set_url('Russian', 'уходить', 'perfective'))
     print(conjugate('Russian', 'уходить', 'infinitive', '', 'perfective'))
     print(conjugate('Russian', 'уходить', 'infinitive', '', 'imperfective'))
     print(conjugate('Russian', 'уходить', 'present tense', '1st', 'imperfective'))
     print(conjugate('Russian', 'уходить', 'present tense', '1st pl', 'imperfective'))
     print(conjugate('Russian', 'уходить', 'future tense', '2nd pl', 'imperfective'))
-    print(conjugate('Russian', 'уходить', 'imperative', 'pl', 'imperfective'))
-    print(conjugate('Russian', 'уходить', 'past tense', 'neuter', 'imperfective'))
+    # print(conjugate('Russian', 'уходить', 'imperative', 'pl', 'imperfective'))
+    # print(conjugate('Russian', 'уходить', 'past tense', 'neuter', 'imperfective'))
+
+    # adjective tests
+    # print(decline_adjective('Russian', 'впечатлённый', 'prepositional', 'plural'))
+    # print(decline_adjective('Russian', 'глянцевый', 'instrumental', 'plural'))
+    # print(decline_adjective('Russian', 'глянцевый', 'short form', 'feminine'))
+    # print(decline_adjective('Russian', 'съедобный', 'accusative', 'masculine inanimate'))
+    # print(decline_adjective('Russian', 'съедобный', 'dative', 'neuter'))
+
+    # noun tests
+    # print(decline_noun('Russian', 'брат', 'instrumental', 'plural'))
+    # print(decline_noun('Russian', 'брат', 'accusative', 'singular'))
+    # print(decline_noun('Russian', 'брат', 'vocative', 'singular'))
+    print(decline_noun('Russian', 'брат', 'dative', 'plural'))
