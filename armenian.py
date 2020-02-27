@@ -1,5 +1,4 @@
 import pandas as pd
-import urllib.parse
 import requests
 from bs4 import BeautifulSoup
 import re
@@ -11,12 +10,18 @@ def get_armenian_conjugation_table(url, language):
     h2_elements = soup.find_all('h2')
     tables = []
     list_navframes = []
+    table_number = 0
     for h2_element in h2_elements:
         if h2_element.find('span', attrs={'id': language}):
             list_navframes = h2_element.find_next_siblings('div', attrs={'class': 'NavFrame'})
+            # some verbs have a declension table before the conjugation table
+            for element in h2_element.find_next_sibling('h4'):
+                if element.find('span', attrs={'id': 'Declension'}):
+                    print(element)
+                    table_number = 2
     for navframe in list_navframes:
         tables.append(pd.read_html(str(navframe))[0])
-    return tables[0]
+    return tables[table_number]
 
 
 def locate_cell(tense, person):
@@ -56,11 +61,27 @@ def conjugate(language, verb, tense, person=''):
 if __name__ == "__main__":
 
     # verb tests
-    print(conjugate('Armenian', 'խոսել', 'infinitive'))
-    print(conjugate('Armenian', 'խոսել', 'causative'))
-    print(conjugate('Armenian', 'խոսել', 'aorist stem'))
-    print(conjugate('Armenian', 'խոսել', 'future converb I'))
-    print(conjugate('Armenian', 'խոսել', 'connegative converb'))
+    # print(conjugate('Armenian', 'խոսել', 'infinitive'))
+    # print(conjugate('Armenian', 'խոսել', 'causative'))
+    # print(conjugate('Armenian', 'խոսել', 'aorist stem'))
+    # print(conjugate('Armenian', 'խոսել', 'future converb I'))
+    # print(conjugate('Armenian', 'խոսել', 'connegative converb'))
+    # print(conjugate('Armenian', 'զբաղվել', 'infinitive'))
+    # print(conjugate('Armenian', 'զբաղվել', 'causative'))
+    # print(conjugate('Armenian', 'զբաղվել', 'aorist stem'))
+    # print(conjugate('Armenian', 'զբաղվել', 'future converb I'))
+    # print(conjugate('Armenian', 'զբաղվել', 'connegative converb'))
+    # print(conjugate('Armenian', 'ցանկանալ', 'infinitive'))
+    # print(conjugate('Armenian', 'ցանկանալ', 'causative'))
+    # print(conjugate('Armenian', 'ցանկանալ', 'aorist stem'))
+    # print(conjugate('Armenian', 'ցանկանալ', 'future converb I'))
+    # print(conjugate('Armenian', 'ցանկանալ', 'connegative converb'))
+    print(conjugate('Armenian', 'գիտենալ', 'infinitive'))
+    # print(conjugate('Armenian', 'գիտենալ', 'causative'))
+    # print(conjugate('Armenian', 'գիտենալ', 'aorist stem'))
+    # print(conjugate('Armenian', 'գիտենալ', 'future converb I'))
+    # print(conjugate('Armenian', 'գիտենալ', 'connegative converb'))
+
 
 
     # other tests

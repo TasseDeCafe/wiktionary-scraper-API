@@ -19,10 +19,13 @@ def identity(payload):
     user_id = payload['identity']
     return userid_table.get(user_id, None)
 
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '0075e7f61334ae26a0e0fd2be0e1f4dd4241a6291bffbec1d9c403c3b9f1'
 
 jwt = JWT(app, authenticate, identity)
+
+bad_request_or_no_data = 'BRDN'
 
 # ******************* Polish functions *******************
 
@@ -39,7 +42,7 @@ def conjugate_polish():
         conjugation_cell = polish.conjugate(language, verb, tense, person, aspect)
         return conjugation_cell
     except Exception:
-        return 'Bad request or no data.'
+        return bad_request_or_no_data
 
 @app.route('/decline_polish_noun', methods=['POST'])
 @jwt_required()
@@ -53,7 +56,7 @@ def decline_polish_noun():
         declined_noun = polish.decline_noun(language, noun, noun_case, number)
         return declined_noun
     except Exception:
-        return 'Bad request or no data.'
+        return bad_request_or_no_data
 
 @app.route('/decline_polish_adjective', methods=['POST'])
 @jwt_required()
@@ -66,7 +69,7 @@ def decline_polish_adjective():
         declined_adjective = polish.decline_adjective(language, adjective, adjective_case, gender_and_number)
         return declined_adjective
     except Exception:
-        return 'Bad request or no data.'
+        return bad_request_or_no_data
 
 
 # ******************* Russian functions *******************
@@ -83,7 +86,7 @@ def conjugate_russian():
         conjugation_cell = russian.conjugate(language, verb, tense, person, aspect)
         return conjugation_cell
     except Exception:
-        return 'Bad request or no data.'
+        return bad_request_or_no_data
 
 @app.route('/decline_russian_noun', methods=['POST'])
 @jwt_required()
@@ -97,7 +100,7 @@ def decline_russian_noun():
         declined_noun = russian.decline_noun(language, noun, noun_case, number)
         return declined_noun
     except Exception:
-        return 'Bad request or no data.'
+        return bad_request_or_no_data
 
 @app.route('/decline_russian_adjective', methods=['POST'])
 @jwt_required()
@@ -110,7 +113,7 @@ def decline_russian_adjective():
         declined_adjective = russian.decline_adjective(language, adjective, adjective_case, gender_and_number)
         return declined_adjective
     except Exception:
-        return 'Bad request or no data.'
+        return bad_request_or_no_data
 
 # ******************* Czech functions *******************
 
@@ -126,7 +129,7 @@ def conjugate_czech():
         conjugation_cell = czech.conjugate(language, verb, tense, person, aspect)
         return conjugation_cell
     except Exception:
-        return 'Bad request or no data.'
+        return bad_request_or_no_data
 
 @app.route('/decline_czech_noun', methods=['POST'])
 @jwt_required()
@@ -140,7 +143,7 @@ def decline_czech_noun():
         declined_noun = czech.decline_noun(language, noun, noun_case, number)
         return declined_noun
     except Exception:
-        return 'Bad request or no data.'
+        return bad_request_or_no_data
 
 @app.route('/decline_czech_adjective', methods=['POST'])
 @jwt_required()
@@ -153,7 +156,7 @@ def decline_czech_adjective():
         declined_adjective = czech.decline_adjective(language, adjective, adjective_case, gender_and_number)
         return declined_adjective
     except Exception:
-        return 'Bad request or no data.'
+        return bad_request_or_no_data
 
 # ******************* Armenian functions *******************
 
@@ -168,7 +171,7 @@ def conjugate_armenian():
         conjugation_cell = armenian.conjugate(language, verb, tense, person)
         return conjugation_cell
     except Exception:
-        return 'Bad request or no data.'
+        return bad_request_or_no_data
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True)
