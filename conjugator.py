@@ -1,15 +1,9 @@
-import polish
-import russian
-import czech
-import armenian
-import estonian
+from language_functions import armenian, russian, polish, thai_to_ipa, estonian, japanese, czech
 import requests
-from flask import Flask, request, jsonify
-from flask_jwt import JWT, jwt_required, current_identity
+from flask import Flask, request
+from flask_jwt import JWT, jwt_required
 from werkzeug.security import safe_str_cmp
 from users_password import users
-import thai_to_ipa
-import japanese
 import pandas as pd
 from big_list_generator.big_list_generator import generate_big_list
 from mandarin_flashcard_generator.mandarin_flashcard_generator import generate_dataframe

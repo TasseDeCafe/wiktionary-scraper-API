@@ -1,9 +1,8 @@
-import pandas as pd
 import urllib.parse
 import requests
 from bs4 import BeautifulSoup
 import re
-from all_language_functions import get_table
+from language_functions.all_language_functions import get_table
 
 
 def remove_romanization(cell_with_romanization):
