@@ -16,9 +16,11 @@ def get_armenian_conjugation_table(url, language):
             list_navframes = h2_element.find_next_siblings('div', attrs={'class': 'NavFrame'})
             # some verbs have a declension table before the conjugation table
             for element in h2_element.find_next_sibling('h4'):
-                if element.find('span', attrs={'id': 'Declension'}):
-                    print(element)
+                if element.text in ("Declension"):
                     table_number = 2
+                # if element.find('span', attrs={'id': 'Declension'}):
+                #     print("I'm here")
+                #     table_number = 2
     for navframe in list_navframes:
         tables.append(pd.read_html(str(navframe))[0])
     return tables[table_number]
@@ -76,11 +78,11 @@ if __name__ == "__main__":
     # print(conjugate('Armenian', 'ցանկանալ', 'aorist stem'))
     # print(conjugate('Armenian', 'ցանկանալ', 'future converb I'))
     # print(conjugate('Armenian', 'ցանկանալ', 'connegative converb'))
-    print(conjugate('Armenian', 'գիտենալ', 'infinitive'))
-    # print(conjugate('Armenian', 'գիտենալ', 'causative'))
-    # print(conjugate('Armenian', 'գիտենալ', 'aorist stem'))
-    # print(conjugate('Armenian', 'գիտենալ', 'future converb I'))
-    # print(conjugate('Armenian', 'գիտենալ', 'connegative converb'))
+    # print(conjugate('Armenian', 'կարողանալ', 'infinitive'))
+    print(conjugate('Armenian', 'զբաղվել', 'infinitive'))
+    # print(conjugate('Armenian', 'կարողանալ', 'aorist stem'))
+    # print(conjugate('Armenian', 'կարողանալ', 'future converb I'))
+    # print(conjugate('Armenian', 'կարողանալ', 'connegative converb'))
 
 
 
