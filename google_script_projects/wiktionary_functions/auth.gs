@@ -2,8 +2,8 @@ function auth() {
     try {
         var url = "http://kindledatabaseconverter.com/auth";
         var payload = {
-            username: "sebastien",
-            password: "RDvNifgjtJ6p1DA"
+            username: "my-username",
+            password: "my-password"
         };
 
         payload = JSON.stringify(payload);
