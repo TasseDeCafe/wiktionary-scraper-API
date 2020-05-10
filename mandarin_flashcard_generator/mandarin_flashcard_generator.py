@@ -16,6 +16,7 @@ import re
 import jieba
 import numpy as np
 
+
 def convert_mandarin_script_to_pinyin(sentence_mandarin):
     segments = jieba.cut(sentence_mandarin)
     output = " ".join(segments)
@@ -77,7 +78,7 @@ def remove_google_translate_column(df):
 
 
 def capitalize(df):
-    df['Keyword in English'] = df['Keyword in English'].apply(lambda x: x[0].capitalize() + x[1:] if x else x)
+    df['Keyword in English'] = df['Keyword in English'].str.capitalize()
     return df
 
 
@@ -122,6 +123,6 @@ def generate_dataframe(df):
 
 
 if __name__ == '__main__':
-    data = pd.read_csv('/home/sebastien/PycharmProjects/wiktionary-scraper-flask/mandarin_flashcards.csv')
+    data = pd.read_csv("..\mandarin_flashcards.csv")
     data = generate_dataframe(data)
     print(data)

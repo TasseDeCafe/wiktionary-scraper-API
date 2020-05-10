@@ -236,11 +236,34 @@ def send_mirai_translation():
 @app.route('/conjugate_estonian', methods=['POST'])
 @jwt_required()
 def conjugate_estonian():
-    language = 'Polish'
     verb = request.form['verb']
     tense = request.form['tense']
     try:
-        conjugation_cell = estonian.conjugate(verb, tense)
+        conjugation_cell = estonian.conjugate_verb(verb, tense)
+        return conjugation_cell
+    except Exception:
+        return bad_request_or_no_data
+
+
+@app.route('/decline_estonian_noun', methods=['POST'])
+@jwt_required()
+def decline_estonian_noun():
+    noun = request.form['noun']
+    case = request.form['case']
+    try:
+        conjugation_cell = estonian.decline_noun(noun, case)
+        return conjugation_cell
+    except Exception:
+        return bad_request_or_no_data
+
+
+@app.route('/decline_estonian_adjective', methods=['POST'])
+@jwt_required()
+def decline_estonian_adjective():
+    adjective = request.form['adjective']
+    case = request.form['case']
+    try:
+        conjugation_cell = estonian.decline_adjective(adjective, case)
         return conjugation_cell
     except Exception:
         return bad_request_or_no_data

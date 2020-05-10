@@ -39,7 +39,11 @@ def locate_cell(tense, person):
                      'future converb I': (3, 6),
                      'future converb II': (4, 6),
                      'connegative converb': (5, 6),
-    }
+                     'aorist 1st singular': (15, 2),
+                     'subjunctive future 1st singular': (17, 2),
+                     'subjunctive future perfect 1st singular': (18, 2),
+                     'imperative 2nd singular': (23, 3)
+                     }
 
     search_key = f'{tense} {person}'.strip()
     location_conjugation = location_dict[search_key]
@@ -56,8 +60,8 @@ def conjugate(language, verb, tense, person=''):
         return 'No data.'
     # remove the romanization in parentheses
     conjugation_cell = re.sub(r'\([^)]*\)', '', conjugation_cell).strip()
+    conjugation_cell = conjugation_cell.split(", ")[0]
     return conjugation_cell
-
 
 
 if __name__ == "__main__":
@@ -79,12 +83,16 @@ if __name__ == "__main__":
     # print(conjugate('Armenian', 'ցանկանալ', 'future converb I'))
     # print(conjugate('Armenian', 'ցանկանալ', 'connegative converb'))
     # print(conjugate('Armenian', 'կարողանալ', 'infinitive'))
-    print(conjugate('Armenian', 'զբաղվել', 'infinitive'))
+    # print(conjugate('Armenian', 'զբաղվել', 'infinitive'))
     # print(conjugate('Armenian', 'կարողանալ', 'aorist stem'))
     # print(conjugate('Armenian', 'կարողանալ', 'future converb I'))
     # print(conjugate('Armenian', 'կարողանալ', 'connegative converb'))
+    print(conjugate('Armenian', 'լսել', 'aorist 1st singular'))
+    print(conjugate('Armenian', 'լսել', 'imperative 2nd singular'))
 
 
 
     # other tests
-    # print(get_armenian_conjugation_table('https://en.wiktionary.org/wiki/%D5%AD%D5%B8%D5%BD%D5%A5%D5%AC', 'խոսել'))
+
+    # armenian_conjugation_table = get_armenian_conjugation_table('https://en.wiktionary.org/wiki/%D5%AD%D5%B8%D5%BD%D5%A5%D5%AC', 'Armenian')
+    # armenian_conjugation_table.to_csv('armenian_conjugation_table.csv')
