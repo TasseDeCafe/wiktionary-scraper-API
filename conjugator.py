@@ -1,12 +1,13 @@
-from language_functions import armenian, russian, polish, thai_to_ipa, estonian, japanese, czech
+import pandas as pd
 import requests
 from flask import Flask, request
 from flask_jwt import JWT, jwt_required
 from werkzeug.security import safe_str_cmp
-from users_password import users
-import pandas as pd
+
 from big_list_generator.big_list_generator import generate_big_list
+from language_functions import armenian, russian, polish, thai, estonian, japanese, czech, mandarin
 from mandarin_flashcard_generator.mandarin_flashcard_generator import generate_dataframe
+from users_password import users
 
 username_table = {u.username: u for u in users}
 userid_table = {u.id: u for u in users}
@@ -193,10 +194,21 @@ def conjugate_armenian():
 def send_ipa():
     thai_text = request.form['thai_text']
     try:
-        ipa = thai_to_ipa.thai_to_ipa(thai_text)
+        ipa = thai.thai_to_ipa(thai_text)
         return ipa
     except Exception:
         return bad_request_or_no_data
+
+
+@app.route('/tokenize_thai', methods=['POST'])
+@jwt_required()
+def tokenize_thai():
+    thai_text = request.form['thai_text']
+    try:
+        return thai.tokenize_thai(thai_text)
+    except Exception:
+        return bad_request_or_no_data
+
 
 
 # ******************* Japanese functions *******************
@@ -305,11 +317,20 @@ def send_big_list():
     return dataframe_to_send_json
 
 
+@app.route('/pinyin', methods=['GET', 'POST'])
+@jwt_required()
+def pinyin():
+    sentence = request.form['sentence']
+    try:
+        return mandarin.convert_mandarin_script_to_pinyin(sentence)
+    except Exception:
+        return bad_request_or_no_data
+
+
 @app.route('/generate_mandarin_flashcards', methods=['GET', 'POST'])
 @jwt_required()
 def generate_mandarin_flashcards():
     json_array = request.json
-    print(json_array)
     mandarin_lesson_dataframe = pd.DataFrame.from_dict(json_array, orient='columns')
     flashcards_dataframe = generate_dataframe(mandarin_lesson_dataframe)
     flashcards_dataframe.to_csv('flashcards_dataframe.csv')

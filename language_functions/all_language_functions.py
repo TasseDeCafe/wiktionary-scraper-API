@@ -57,6 +57,7 @@ def set_url(language, verb, aspect):
 
     return url, verb_of_other_aspect, aspect_verb
 
+
 def locate_cell(conjugation_table, tense, person):
     # todo: refactor this, it is unreadable
     # find location of all cells that contain tense in the conjugation table

@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import deepcut
 
 
 def thai_to_ipa(thai_text):
@@ -20,5 +21,10 @@ def thai_to_ipa(thai_text):
     return ipa.text
 
 
+def tokenize_thai(thai_sentence):
+    return " ".join(deepcut.tokenize(thai_sentence))
+
+
 if __name__ == '__main__':
     print(thai_to_ipa('คิดว่าเราต้องเดาว่าอะไรเป็นของขวัญที่นิมชอบที่สุด'))
+    print(tokenize_thai('คิดว่าเราต้องเดาว่าอะไรเป็นของขวัญที่นิมชอบที่สุด'))
